@@ -24,6 +24,49 @@ The feature selection techniques used are:
 3.Embedded Method
 
 # CODING AND OUTPUT:
-       # INCLUDE YOUR CODING AND OUTPUT SCREENSHOTS HERE
+```
+import pandas as pd
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, MaxAbsScaler, RobustScaler
+from sklearn.feature_selection import SelectKBest, f_classif
+
+df = pd.read_csv("D:\Data Science\\CSV files\\bmi.csv")
+
+df.dropna(inplace=True)  
+
+df['Gender'] = df['Gender'].map({'Male': 0, 'Female': 1})
+
+features = ['Gender', 'Height', 'Weight']
+target = 'Index'
+
+X = df[features]
+y = df[target]
+
+scalers = {
+    'StandardScaler': StandardScaler(),
+    'MinMaxScaler': MinMaxScaler(),
+    'MaxAbsScaler': MaxAbsScaler(),
+    'RobustScaler': RobustScaler()
+}
+scaled_dfs = {}
+for name, scaler in scalers.items():
+    scaled = scaler.fit_transform(X)
+    scaled_df = pd.DataFrame(scaled, columns=[f"{col}_{name}" for col in features])
+    scaled_dfs[name] = scaled_df
+
+final_df = pd.concat([df, *scaled_dfs.values()], axis=1)
+
+selector = SelectKBest(score_func=f_classif, k=3)
+selected_features = selector.fit_transform(X, y)
+
+selected_df = pd.DataFrame(selected_features, columns=['Selected1', 'Selected2', 'Selected3'])
+final_df = pd.concat([final_df, selected_df], axis=1)
+
+final_df.to_csv("bmi_scaled_selected.csv", index=False)
+print("Data cleaned, scaled, selected, and saved to 'bmi_scaled_selected.csv'")
+```
+Data cleaned, scaled, selected, and saved to 'bmi_scaled_selected.csv'
+<img width="1468" height="798" alt="DS Ex4 - Output 1" src="https://github.com/user-attachments/assets/a1c8251f-12f0-4e71-8d25-e4bc022798d2" />
+<img width="1467" height="793" alt="DS Ex4 - Output 2" src="https://github.com/user-attachments/assets/da16cabc-d8be-4068-a031-e8ee92a045a6" />
+
 # RESULT:
-       # INCLUDE YOUR RESULT HERE
+We have performed Feature Scaling and Feature Selection processes and saved the changes to a dataset csv file 'bmi_scaled_selected.csv'. 
